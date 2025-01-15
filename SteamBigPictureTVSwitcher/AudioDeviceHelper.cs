@@ -8,11 +8,12 @@ public static partial class AudioDeviceHelper
 
     [GeneratedRegex(CaptureIdRegex)]
     private static partial Regex CaptureIdMatcher();
+
     private const string CaptureNameRegex = @"Name\s+:\s+(.*)";
 
     [GeneratedRegex(CaptureNameRegex)]
     private static partial Regex CaptureNameMatcher();
-    
+
     public static string GetCurrentAudioDeviceId()
     {
         string commandOutput = "Get-AudioDevice -PlaybackCommunication".RunUsingPowershell();
@@ -33,7 +34,7 @@ public static partial class AudioDeviceHelper
         Console.WriteLine($"Changed default audio device to {audioDeviceId} successfully [Name - {audioDeviceName}].");
     }
 
-    public static string GetAudioDeviceName(string audioDeviceId)
+    private static string GetAudioDeviceName(string audioDeviceId)
     {
         string commandOutput = $"Get-AudioDevice -ID '{audioDeviceId}'".RunUsingPowershell();
 

@@ -50,7 +50,7 @@ public class DeviceMonitor : IDisposable
         return Task.Run(GetConnectedBluetoothDevicesAsync, _cancellationToken).GetAwaiter().GetResult();
     }
 
-    private async Task<List<MonitoredDevice>> GetConnectedBluetoothDevicesAsync()
+    private static async Task<List<MonitoredDevice>> GetConnectedBluetoothDevicesAsync()
     {
         var usagePage = (short)Env.GetInt("DEVICE_USAGE_PAGE", -1);
         var usageId = (short)Env.GetInt("DEVICE_USAGE_ID", -1);

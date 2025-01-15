@@ -14,7 +14,7 @@ internal class Program
     private static string _lastAudioDeviceId = "";
 
     [STAThread]
-    static void Main()
+    private static void Main()
     {
         Env.Load();
 
