@@ -34,9 +34,7 @@ public static partial class AudioDeviceHelper
         Console.WriteLine($"Changing default audio device to name {audioDeviceName}");
 
         string listAudioDevicesCommandResponse = "Get-AudioDevice -List".RunUsingPowershell();
-        Console.WriteLine(listAudioDevicesCommandResponse);
         List<AudioDevice> audioDevices = listAudioDevicesCommandResponse.Split([Environment.NewLine + Environment.NewLine], StringSplitOptions.RemoveEmptyEntries).Select(ParseCommandOutput).ToList();
-        Console.WriteLine($"Audio devices {audioDevices.Count}, [{string.Join(',', audioDevices.Select(d => d.Name))}]");
         AudioDevice? desiredAudioDevice = audioDevices.FirstOrDefault(device => device.Name == audioDeviceName);
 
         if (desiredAudioDevice is null)
