@@ -1,0 +1,116 @@
+name: build, test and release
+
+on:
+  push:
+    branches: [ "master" ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/LICENSE'
+      - '**/.github/*'
+      - '!**/.github/workflows/*'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Bump Project Version
+        id: bump
+        uses: vers-one/dotnet-project-version-updater@v1.5
+        with:
+          file: "**/*.csproj"
+          version: bump-build
+
+      - name: Push New Version
+        run: |
+          git config user.name "Yuval Ziv"
+          git config user.email "yuval-ziv@users.noreply.github.com"
+          git add .
+          git commit -m "Bump project version to ${{ steps.bump.outputs.newVersion }}"
+          git push
+
+      - name: Build Windows x64
+        run: dotnet publish -r win-x64 -p:PublishSingleFile=true -f net9.0-windows10.0.22621.0
+
+      - name: Build Windows x86
+        run: dotnet publish -r win-x86 -p:PublishSingleFile=true -f net9.0-windows10.0.22621.0
+
+      - name: Build Windows arm64
+        run: dotnet publish -r win-arm64 -p:PublishSingleFile=true -f net9.0-windows10.0.22621.0
+
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.bump.outputs.newVersion }}
+          release_name: ${{ steps.bump.outputs.newVersion }}
+          draft: true
+          prerelease: false
+
+      - name: Upload example.env File
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-x64/publish/example.env
+          asset_name: example.env
+          asset_content_type: application/txt
+
+      - name: Upload Windows x64 File
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./LyricsFinder/bin/Release/net8.0/win-x64/publish/LyricsFinder.exe
+          asset_name: LyricsFinder-win-x64.exe
+          asset_content_type: application/exe
+
+      - name: Upload Windows x86 File
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./LyricsFinder/bin/Release/net8.0/win-x86/publish/LyricsFinder.exe
+          asset_name: LyricsFinder-win-x86.exe
+          asset_content_type: application/exe
+
+      - name: Upload Windows arm64 File
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./LyricsFinder/bin/Release/net8.0/win-arm64/publish/LyricsFinder.exe
+          asset_name: LyricsFinder-win-arm64.exe
+          asset_content_type: application/exe
+
+      - name: Publish Release
+        uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+    
+
