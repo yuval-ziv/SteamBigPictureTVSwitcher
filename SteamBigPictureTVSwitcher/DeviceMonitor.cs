@@ -1,12 +1,11 @@
 ﻿using Windows.Devices.Enumeration;
 using Windows.Devices.HumanInterfaceDevice;
 using Windows.Foundation;
+using DotNetEnv;
 
 namespace SteamBigPictureTVSwitcher;
 
 public record MonitoredDevice(string Id, string Name, bool IsConnected, string? InstanceId = null);
-
-public delegate void MyEventHandler(object sender, EventArgs e);
 
 public class DeviceMonitor : IDisposable
 {
@@ -53,15 +52,35 @@ public class DeviceMonitor : IDisposable
 
     private async Task<List<MonitoredDevice>> GetConnectedBluetoothDevicesAsync()
     {
-        // ushort vendorId = 0x045E;
-        // ushort productId = 0x0b13;
-        const ushort usagePage = 0x0001;
-        const ushort usageId = 0x0005;
+        var usagePage = (short)Env.GetInt("DEVICE_USAGE_PAGE", -1);
+        var usageId = (short)Env.GetInt("DEVICE_USAGE_ID", -1);
+        var vendorId = (short)Env.GetInt("DEVICE_VENDOR_ID", -1);
+        var productId = (short)Env.GetInt("DEVICE_PRODUCT_ID", -1);
 
-        string xboxDeviceSelector = HidDevice.GetDeviceSelector(usagePage, usageId);
+        string xboxDeviceSelector = GetDeviceSelector(usagePage, usageId, vendorId, productId);
         List<DeviceInformation> xboxDevices = (await DeviceInformation.FindAllAsync(xboxDeviceSelector)).Where(device => device.IsEnabled).ToList();
 
         return xboxDevices.Select(ToMonitoredDevice).ToList();
+    }
+
+    private static string GetDeviceSelector(short usagePage, short usageId, short vendorId, short productId)
+    {
+        if (usagePage < 0)
+        {
+            throw new ArgumentException($"Usage page must be set to a positive number (was {usagePage})");
+        }
+
+        if (usageId < 0)
+        {
+            throw new ArgumentException($"Usage page must be set to a positive number (was {usageId})");
+        }
+
+        if (vendorId == -1 || productId == -1)
+        {
+            return HidDevice.GetDeviceSelector((ushort)usagePage, (ushort)usageId);
+        }
+
+        return HidDevice.GetDeviceSelector((ushort)usagePage, (ushort)usageId, (ushort)vendorId, (ushort)productId);
     }
 
     private static MonitoredDevice ToMonitoredDevice(DeviceInformation device)
