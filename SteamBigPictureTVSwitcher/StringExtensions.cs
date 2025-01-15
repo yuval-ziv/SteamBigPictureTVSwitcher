@@ -36,7 +36,7 @@ public static partial class StringExtensions
 
     private static string NormalizeOutput(string output)
     {
-        return AnsiEscapeCharactersRegex().Replace(output, string.Empty);
+        return AnsiEscapeCharactersRegex().Replace(output, string.Empty).Trim();
     }
 
     private static void PrintRawCommandOutputIfNeeded(string output)
