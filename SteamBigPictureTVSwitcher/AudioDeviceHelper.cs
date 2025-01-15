@@ -7,10 +7,10 @@ public class AudioDevice
     public int Index { get; set; }
     public bool Default { get; set; }
     public bool DefaultCommunication { get; set; }
-    public string Type { get; set; }
-    public string Name { get; set; }
-    public string ID { get; set; }
-    public string Device { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string ID { get; set; } = string.Empty;
+    public string Device { get; set; } = string.Empty;
 }
 
 public static partial class AudioDeviceHelper
