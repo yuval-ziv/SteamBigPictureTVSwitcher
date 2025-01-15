@@ -2,66 +2,87 @@
 
 namespace SteamBigPictureTVSwitcher;
 
+public class AudioDevice
+{
+    public int Index { get; set; }
+    public bool Default { get; set; }
+    public bool DefaultCommunication { get; set; }
+    public string Type { get; set; }
+    public string Name { get; set; }
+    public string ID { get; set; }
+    public string Device { get; set; }
+}
+
 public static partial class AudioDeviceHelper
 {
-    private const string CaptureIdRegex = @"ID\s+:\s+({[^}]+}\.[{0-9a-fA-F\-}]+)";
+    [GeneratedRegex(@"(?<key>.+?)\s*:\s*(?<value>.+)")]
+    private static partial Regex KeyValuePairMatcher();
 
-    [GeneratedRegex(CaptureIdRegex)]
-    private static partial Regex CaptureIdMatcher();
-
-    private const string CaptureNameRegex = @"Name\s+:\s+(.*)";
-
-    [GeneratedRegex(CaptureNameRegex)]
-    private static partial Regex CaptureNameMatcher();
-
-    public static string GetCurrentAudioDeviceId()
+    public static AudioDevice GetCurrentAudioDevice()
     {
         string commandOutput = "Get-AudioDevice -PlaybackCommunication".RunUsingPowershell();
 
-        string currentAudioDeviceId = GetAudioDeviceIdFromCommandOutput(commandOutput);
+        AudioDevice audioDevice = ParseCommandOutput(commandOutput);
 
-        string audioDeviceName = GetAudioDeviceName(currentAudioDeviceId);
-        Console.WriteLine($"Current audio device is {audioDeviceName} ({currentAudioDeviceId}).");
+        Console.WriteLine($"Current audio device is {audioDevice.Name} ({audioDevice.ID}).");
 
-        return currentAudioDeviceId;
+        return audioDevice;
     }
 
-    public static void ChangeDefaultAudioDevice(string audioDeviceId)
+    public static void ChangeDefaultAudioDevice(string audioDeviceName)
     {
-        Console.WriteLine($"Changing default audio device to id {audioDeviceId}");
-        $"Set-AudioDevice -ID '{audioDeviceId}'".RunUsingPowershell();
-        string audioDeviceName = GetAudioDeviceName(audioDeviceId);
-        Console.WriteLine($"Changed default audio device to {audioDeviceId} successfully [Name - {audioDeviceName}].");
-    }
+        Console.WriteLine($"Changing default audio device to name {audioDeviceName}");
 
-    private static string GetAudioDeviceName(string audioDeviceId)
-    {
-        string commandOutput = $"Get-AudioDevice -ID '{audioDeviceId}'".RunUsingPowershell();
+        string listAudioDevicesCommandResponse = "Get-AudioDevice -List".RunUsingPowershell();
+        Console.WriteLine(listAudioDevicesCommandResponse);
+        List<AudioDevice> audioDevices = listAudioDevicesCommandResponse.Split([Environment.NewLine + Environment.NewLine], StringSplitOptions.RemoveEmptyEntries).Select(ParseCommandOutput).ToList();
+        Console.WriteLine($"Audio devices {audioDevices.Count}, [{string.Join(',', audioDevices.Select(d => d.Name))}]");
+        AudioDevice? desiredAudioDevice = audioDevices.FirstOrDefault(device => device.Name == audioDeviceName);
 
-        return GetAudioDeviceNameFromCommandOutput(commandOutput);
-    }
-
-    private static string GetAudioDeviceIdFromCommandOutput(string commandOutput)
-    {
-        Match match = CaptureIdMatcher().Match(commandOutput);
-
-        if (match.Success)
+        if (desiredAudioDevice is null)
         {
-            return match.Groups[1].Value.Trim();
+            throw new Exception($"Couldn't find audio device named {audioDeviceName}");
         }
 
-        throw new Exception($"Couldn't find current audio device id using this regex - {CaptureIdRegex} in powershell command output{Environment.NewLine}{commandOutput}");
+        $"Set-AudioDevice -ID '{desiredAudioDevice.ID}'".RunUsingPowershell();
+        Console.WriteLine($"Changed default audio device to {desiredAudioDevice.ID} successfully [Name - {desiredAudioDevice.Name}].");
     }
 
-    private static string GetAudioDeviceNameFromCommandOutput(string commandOutput)
+    private static AudioDevice ParseCommandOutput(string input)
     {
-        Match match = CaptureNameMatcher().Match(commandOutput);
+        var audioDevice = new AudioDevice();
 
-        if (match.Success)
+        foreach (Match match in KeyValuePairMatcher().Matches(input))
         {
-            return match.Groups[1].Value.Trim();
+            string key = match.Groups["key"].Value.Trim();
+            string value = match.Groups["value"].Value.Trim();
+
+            switch (key)
+            {
+                case "Index":
+                    audioDevice.Index = int.Parse(value);
+                    break;
+                case "Default":
+                    audioDevice.Default = bool.Parse(value);
+                    break;
+                case "DefaultCommunication":
+                    audioDevice.DefaultCommunication = bool.Parse(value);
+                    break;
+                case "Type":
+                    audioDevice.Type = value;
+                    break;
+                case "Name":
+                    audioDevice.Name = value;
+                    break;
+                case "ID":
+                    audioDevice.ID = value;
+                    break;
+                case "Device":
+                    audioDevice.Device = value;
+                    break;
+            }
         }
 
-        throw new Exception($"Couldn't find audio device name using this regex - {CaptureNameRegex} in powershell command output{Environment.NewLine}{commandOutput}");
+        return audioDevice;
     }
 }

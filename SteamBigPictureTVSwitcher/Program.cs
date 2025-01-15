@@ -7,9 +7,9 @@ namespace SteamBigPictureTVSwitcher;
 internal class Program
 {
     private static string _televisionDeviceName = "";
-    private static string _televisionAudioDevice = "";
+    private static string _televisionAudioDeviceName = "";
 
-    private static string _lastAudioDeviceId = "";
+    private static AudioDevice _lastAudioDevice = new();
 
     [STAThread]
     private static void Main()
@@ -17,10 +17,10 @@ internal class Program
         Env.Load();
 
         _televisionDeviceName = Env.GetString("TELEVISION_DISPLAY_NAME");
-        _televisionAudioDevice = Env.GetString("TELEVISION_AUDIO_DEVICE");
+        _televisionAudioDeviceName = Env.GetString("TELEVISION_AUDIO_DEVICE_NAME");
 
         var bluetoothDeviceMonitor = new DeviceMonitor();
-        _lastAudioDeviceId = GetCurrentAudioDeviceId();
+        _lastAudioDevice = GetCurrentAudioDevice();
 
         SystemEvents.DisplaySettingsChanged += DisplaySettingsChanged;
         bluetoothDeviceMonitor.DeviceAdded += DeviceAdded;
@@ -43,14 +43,14 @@ internal class Program
 
         if (primaryScreen?.DeviceName == _televisionDeviceName)
         {
-            _lastAudioDeviceId = GetCurrentAudioDeviceId();
+            _lastAudioDevice = GetCurrentAudioDevice();
             Console.WriteLine("Primary screen is television");
-            ChangeDefaultAudioDevice(_televisionAudioDevice);
+            ChangeDefaultAudioDevice(_televisionAudioDeviceName);
         }
         else
         {
             Console.WriteLine($"Primary screen is not television [name - '{primaryScreen?.DeviceName}']");
-            ChangeDefaultAudioDevice(_lastAudioDeviceId);
+            ChangeDefaultAudioDevice(_lastAudioDevice.Name);
         }
     }
 
