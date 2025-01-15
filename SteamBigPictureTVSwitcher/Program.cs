@@ -4,8 +4,6 @@ using static SteamBigPictureTVSwitcher.AudioDeviceHelper;
 
 namespace SteamBigPictureTVSwitcher;
 
-// Requires Powershell module - AudioDeviceCmdlets (https://www.powershellgallery.com/packages/AudioDeviceCmdlets/3.1.0.2)
-
 internal class Program
 {
     private static string _televisionDeviceName = "";
