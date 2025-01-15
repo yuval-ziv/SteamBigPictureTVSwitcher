@@ -23,7 +23,7 @@ Or use any other way you can think of to launch this on startup, I don't care. Y
 ### Required:
 
 - **TELEVISION_DISPLAY_NAME** - The display name Steam switches to when starting BP. Can be found using `Get-CimInstance -Namespace root\wmi -Class WmiMonitorBasicDisplayParams`.
-- **TELEVISION_AUDIO_DEVICE** - The ID of the desired audio device when BP is on. Can be found using Get-AudioDevice -List
+- **TELEVISION_AUDIO_DEVICE_NAME** - The name of the desired audio device when BP is on. Can be found using Get-AudioDevice -List
 - **DEVICE_USAGE_PAGE** - See more in the [Hardware IDs section](#hardware-ids).
 - **DEVICE_USAGE_ID** - See more in the [Hardware IDs section](#hardware-ids).
 
