@@ -82,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0/win-x64/publish/SteamBigPictureTVSwitcher.exe
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-x64/publish/SteamBigPictureTVSwitcher.exe
           asset_name: LyricsFinder-win-x64.exe
           asset_content_type: application/exe
 
@@ -92,7 +92,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0/win-x86/publish/SteamBigPictureTVSwitcher.exe
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-x86/publish/SteamBigPictureTVSwitcher.exe
           asset_name: LyricsFinder-win-x86.exe
           asset_content_type: application/exe
 
@@ -102,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0/win-arm64/publish/SteamBigPictureTVSwitcher.exe
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-arm64/publish/SteamBigPictureTVSwitcher.exe
           asset_name: LyricsFinder-win-arm64.exe
           asset_content_type: application/exe
 
