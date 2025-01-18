@@ -47,13 +47,13 @@ jobs:
           git push
 
       - name: Build Windows x64
-        run: dotnet publish -r win-x64 -p:PublishSingleFile=true -f net9.0-windows10.0.22621.0
+        run: dotnet publish -r win-x64 -p:PublishSingleFile=true -f net9.0-windows10.0.26100.0
 
       - name: Build Windows x86
-        run: dotnet publish -r win-x86 -p:PublishSingleFile=true -f net9.0-windows10.0.22621.0
+        run: dotnet publish -r win-x86 -p:PublishSingleFile=true -f net9.0-windows10.0.26100.0
 
       - name: Build Windows arm64
-        run: dotnet publish -r win-arm64 -p:PublishSingleFile=true -f net9.0-windows10.0.22621.0
+        run: dotnet publish -r win-arm64 -p:PublishSingleFile=true -f net9.0-windows10.0.26100.0
 
       - name: Create Draft Release
         id: create_release
@@ -72,7 +72,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-x64/publish/example.env
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.26100.0/win-x64/publish/example.env
           asset_name: example.env
           asset_content_type: application/txt
 
@@ -82,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-x64/publish/SteamBigPictureTVSwitcher.exe
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.26100.0/win-x64/publish/SteamBigPictureTVSwitcher.exe
           asset_name: SteamBigPictureTVSwitcher-win-x64.exe
           asset_content_type: application/exe
 
@@ -92,7 +92,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-x86/publish/SteamBigPictureTVSwitcher.exe
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.26100.0/win-x86/publish/SteamBigPictureTVSwitcher.exe
           asset_name: SteamBigPictureTVSwitcher-win-x86.exe
           asset_content_type: application/exe
 
@@ -102,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.22621.0/win-arm64/publish/SteamBigPictureTVSwitcher.exe
+          asset_path: ./SteamBigPictureTVSwitcher/bin/Release/net9.0-windows10.0.26100.0/win-arm64/publish/SteamBigPictureTVSwitcher.exe
           asset_name: SteamBigPictureTVSwitcher-win-arm64.exe
           asset_content_type: application/exe
 
